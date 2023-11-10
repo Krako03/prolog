@@ -1,4 +1,4 @@
-package conexionprologjava;
+package funciones;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,13 +12,15 @@ public class funciones {
     public static void consultarProlog() {
         Query consulta = new Query("consult('Nombres.pl')");
         if (consulta.hasSolution()) {
-            Query q = new Query("persona(Nombre, Sexo, Amigos)");
+            Query q = new Query("persona(Nombre, Pass, Amigos,Desc,Img)");
             while (q.hasMoreSolutions()) {
                 java.util.Map<String, Term> solution = q.nextSolution();
                 Term nombre = solution.get("Nombre");
-                Term sexo = solution.get("Sexo");
+                Term sexo = solution.get("Pass");
                 Term amigos = solution.get("Amigos");
-                System.out.println("Nombre: " + nombre + ", Sexo: " + sexo + ", Amigos: " + amigos);
+                Term descrip = solution.get("Desc");
+                Term imagen = solution.get("Img");
+                System.out.println("Nombre: " + nombre + ", Pass: " + sexo + ", Amigos: " + amigos+" Desc: "+ descrip+" Img: "+imagen);
             }
         }
     }
@@ -26,7 +28,7 @@ public class funciones {
     public static String verAmigos(String persona) {
         Query consulta = new Query("consult('Nombres.pl')");
         if (consulta.hasSolution()) {
-            Query q = new Query("persona(" + persona + ",_,Amigos)");
+            Query q = new Query("persona(" + persona + ",_,Amigos,_,_)");
             java.util.Map<String, Term> solution = q.nextSolution();
             Term amigos = solution.get("Amigos");
             return amigos.toString();
@@ -150,9 +152,11 @@ public class funciones {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        
+        nuevaPersona = nuevaPersona.replace(' ','_');
+        
         // Agregar el nuevo hecho al contenido existente
-        String facto = "persona(" + nuevaPersona + ", " + sexo + ", []).";
+        String facto = "persona(" + nuevaPersona + ", " + sexo + ", [],_,default).";
         contenido.append(facto).append("\n");
 
         // Escribir el contenido actualizado de vuelta al archivo
@@ -183,7 +187,9 @@ public class funciones {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        
+        
+        
         // Escribir el contenido actualizado de vuelta al archivo
         File archivoNuevo = new File("Nombres.pl");
         try {
@@ -195,5 +201,39 @@ public class funciones {
             e.printStackTrace();
         }
 
+    }
+    
+    public static String verAmigosEnComun(String persona, String amigo) {
+        Query consulta = new Query("consult('Nombres.pl')");
+        if (consulta.hasSolution()) {
+            Query q = new Query("amigoEnComun("+persona+","+amigo+",Amigos).");
+            java.util.Map<String, Term> solution = q.nextSolution();
+            Term amigos = solution.get("Amigos");
+            return amigos.toString();
+        }
+        return "";
+    }
+    
+    public static boolean puedeEnviar(String persona, String amigo) {
+        Query consulta = new Query("consult('Nombres.pl')");
+        boolean puede = false;
+        if (consulta.hasSolution()) {
+            Query q = new Query("puedeEnviar("+persona+","+amigo+").");
+            
+            puede = q.hasSolution();
+            return puede;
+        }
+        return puede;
+    }
+    
+    public static boolean verificarUsuario(String nombre, String contra) {
+        Query archivo = new Query("consult('Nombres.pl')");
+            boolean result = false;
+            if(archivo.hasSolution()){
+                nombre = nombre.replace(' ','_');
+                Query consulta = new Query("persona("+nombre+","+contra+",_,_,_).");
+                result = consulta.hasSolution();
+            }
+            return result;
     }
 }
