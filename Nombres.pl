@@ -17,8 +17,31 @@ encontrarComun([_|T1],LAmigos,Comunes):-
     encontrarComun(T1,LAmigos,Comunes).
 
 
+diferencia_listas([], _, []).
+diferencia_listas([X|RestoA], B, Diferencia) :-
+    persona(X, _, _, _, _),  % Aseg�rate de que X es una persona
+    member(X, B),
+    !,
+    diferencia_listas(RestoA, B, Diferencia).
+diferencia_listas([X|RestoA], B, [X|Diferencia]) :-
+    persona(X, _, _, _, _),  % Aseg�rate de que X es una persona
+    diferencia_listas(RestoA, B, Diferencia).
 
+personasNoAmigas(Persona, Resultado) :-
+    persona(Persona, _, Amigos, _, _),
+    mundo(Mundo),
+    diferencia_listas(Mundo, [Persona|Amigos], Resultado).
 
-persona(yael, 123, [saul_bejar,oscar],si_a_huevo,patito).
-persona(saul_bejar, 1, [yael,oscar],_,arbol).
-persona(yael_nuevo, 1, [],_,default).
+mundo([yael,saul_bejar,oscar,isaac,montse,pablo,juan,noe,hipo]).
+
+persona(yael, 123, [noe,pablo,oscar,saul_bejar],si,joao).
+persona(saul_bejar, 1, [pablo,yael,oscar,isaac,montse,noe,hipo],dwadwa,default).
+
+persona(oscar, 1, [],nel_pastel,joao).
+persona(montse, 1, [],nel_pastel,default).
+persona(isaac, 1, [],nel_pastel,joao).
+persona(pablo, 1, [],nel_pastel,joao).
+persona(hipo, 1, [],nel_pastel,joao).
+persona(noe, 1, [],nel_pastel,joao).
+persona(juan, 1, [],nel_pastel,joao).
+

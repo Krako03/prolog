@@ -59,13 +59,14 @@ public class Login implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == botonIngresar){
             
-            String nombre = campoNombre.getText();
+            String nombre = campoNombre.getText().replace(' ', '_');
             String contra = campoContra.getText();
             if(nombre.equals("") || contra.equals("")){
                 JOptionPane.showMessageDialog(null, "Los campos están vacíos!","Aviso!",2);
             }else{
                 if(funciones.verificarUsuario(nombre, contra)){
-                    System.out.println(funciones.verificarUsuario(nombre, contra));
+                    Perfil perfil = new Perfil(nombre);
+                    ventana.dispose();
                 }else{
                     JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos","Aviso!",2);
                 }
